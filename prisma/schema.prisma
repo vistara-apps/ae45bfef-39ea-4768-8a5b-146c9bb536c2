@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReportFrequency {
+  shift
+  daily
+  weekly
+}
+
+enum IncidentSeverity {
+  low
+  medium
+  high
+}
+
+model Guard {
+  id                String   @id @default(cuid())
+  walletAddress     String   @unique
+  farcasterFID      Int?     @unique
+  name              String
+  company           String
+  totalGRT          Int      @default(0)
+  totalCheckpoints  Int      @default(0)
+  averagePatrolScore Float?  @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  patrols         Patrol[]
+  incidentReports IncidentReport[]
+  reputationTokens ReputationToken[]
+
+  @@map("guards")
+}
+
+model Property {
+  id                String   @id @default(cuid())
+  name              String
+  clientEmail       String
+  address           String
+  logoURL           String?
+  requiredCheckpoints Int    @default(8)
+  reportFrequency   ReportFrequency @default(shift)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  checkpoints Checkpoint[]
+  patrols     Patrol[]
+
+  @@map("properties")
+}
+
+model Checkpoint {
+  id           String  @id @default(cuid())
+  locationName String
+  latitude     Float
+  longitude    Float
+  qrCodeHash   String  @unique
+  nfcTagID     String? @unique
+  propertyID   String
+
+  // Relations
+  property        Property         @relation(fields: [propertyID], references: [id], onDelete: Cascade)
+  checkpointScans CheckpointScan[]
+  incidentReports IncidentReport[]
+
+  @@map("checkpoints")
+}
+
+model Patrol {
+  id                  String   @id @default(cuid())
+  guardID             String
+  propertyID          String
+  startTime           DateTime
+  endTime             DateTime?
+  checkpointsCompleted Int     @default(0)
+  checkpointsRequired Int     @default(8)
+  patrolScore         Float?
+  routeGeoJSON        Json?
+  txHash              String?  @unique
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  guard             Guard             @relation(fields: [guardID], references: [id], onDelete: Cascade)
+  property          Property          @relation(fields: [propertyID], references: [id], onDelete: Cascade)
+  checkpointScans   CheckpointScan[]
+  incidentReports   IncidentReport[]
+
+  @@map("patrols")
+}
+
+model CheckpointScan {
+  id                  String   @id @default(cuid())
+  patrolID            String
+  checkpointID        String
+  scannedAt           DateTime
+  gpsLat              Float
+  gpsLong             Float
+  distanceFromCheckpoint Float
+  verified            Boolean  @default(false)
+  txHash              String   @unique
+  grtAwarded          Int      @default(1)
+  createdAt           DateTime @default(now())
+
+  // Relations
+  patrol     Patrol     @relation(fields: [patrolID], references: [id], onDelete: Cascade)
+  checkpoint Checkpoint @relation(fields: [checkpointID], references: [id], onDelete: Cascade)
+
+  @@map("checkpoint_scans")
+}
+
+model IncidentReport {
+  id              String   @id @default(cuid())
+  patrolID        String
+  guardID         String
+  checkpointID    String?
+  photoIPFSHash   String
+  photoThumbnailURL String
+  aiSummary       String
+  reportedAt      DateTime
+  gpsLat          Float
+  gpsLong         Float
+  severity        IncidentSeverity @default(low)
+  txHash          String   @unique
+  createdAt       DateTime @default(now())
+
+  // Relations
+  patrol     Patrol      @relation(fields: [patrolID], references: [id], onDelete: Cascade)
+  guard      Guard       @relation(fields: [guardID], references: [id], onDelete: Cascade)
+  checkpoint Checkpoint? @relation(fields: [checkpointID], references: [id])
+
+  @@map("incident_reports")
+}
+
+model ReputationToken {
+  id          String   @id @default(cuid())
+  guardID     String
+  amount      Int
+  reason      String
+  awardedAt   DateTime
+  txHash      String   @unique
+  createdAt   DateTime @default(now())
+
+  // Relations
+  guard Guard @relation(fields: [guardID], references: [id], onDelete: Cascade)
+
+  @@map("reputation_tokens")
+}

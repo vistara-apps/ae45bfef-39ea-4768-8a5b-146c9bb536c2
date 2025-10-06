@@ -1,6 +1,7 @@
 'use client';
 
-import { CheckCircle2, Circle, QrCode } from 'lucide-react';
+import { CheckCircle2, Circle } from 'lucide-react';
+import { CheckpointScanner } from './CheckpointScanner';
 
 interface Checkpoint {
   id: string;
@@ -31,11 +32,6 @@ export function CheckpointList() {
           <CheckpointCard key={checkpoint.id} checkpoint={checkpoint} />
         ))}
       </div>
-
-      {/* Scan Button */}
-      <button className="scan-button">
-        <QrCode className="w-8 h-8 text-white" />
-      </button>
     </div>
   );
 }
@@ -63,7 +59,7 @@ function CheckpointCard({ checkpoint }: { checkpoint: Checkpoint }) {
 
   return (
     <div className={`glass-card p-4 border ${getStatusStyle()} transition-all duration-200`}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           {getStatusIcon()}
           <div>
@@ -73,13 +69,29 @@ function CheckpointCard({ checkpoint }: { checkpoint: Checkpoint }) {
             )}
           </div>
         </div>
-        
+
         {checkpoint.grt && (
           <div className="flex items-center gap-1 bg-primary/20 text-primary px-2 py-1 rounded-full text-sm font-medium">
             +{checkpoint.grt} GRT
           </div>
         )}
       </div>
+
+      {checkpoint.status === 'current' && (
+        <CheckpointScanner
+          checkpoint={{
+            id: checkpoint.id,
+            locationName: checkpoint.name,
+            latitude: 40.7128, // Mock coordinates - in real app, fetch from API
+            longitude: -74.0060,
+            qrCodeHash: `checkpoint_${checkpoint.id}`,
+          }}
+          onScanComplete={(verification) => {
+            console.log('Checkpoint scanned:', verification);
+            // Handle scan completion - update state, call API, etc.
+          }}
+        />
+      )}
     </div>
   );
 }

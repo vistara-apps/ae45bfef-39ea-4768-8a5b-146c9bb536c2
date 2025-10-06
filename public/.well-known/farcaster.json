@@ -1,0 +1,30 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "PatrolProof",
+    "subtitle": "Built with Zara",
+    "description": "PatrolProof is a Base Mini App built with Zara.",
+    "iconUrl": "https://0co.to/images/zara-2.png",
+    "homeUrl": "https://ae45bfef39ea47688a5b146c9bb536c2-ryt6.vercel.app",
+    "splashImageUrl": "https://ae45bfef39ea47688a5b146c9bb536c2-ryt6.vercel.app/splash.png",
+    "splashBackgroundColor": "#000000",
+    "heroImageUrl": "https://ae45bfef39ea47688a5b146c9bb536c2-ryt6.vercel.app/image.png",
+    "tagline": "PatrolProof",
+    "screenshotUrls": [
+      "https://ae45bfef39ea47688a5b146c9bb536c2-ryt6.vercel.app/screenshot.png",
+      "https://ae45bfef39ea47688a5b146c9bb536c2-ryt6.vercel.app/screenshot.png"
+    ],
+    "primaryCategory": "social",
+    "tags": [
+      "base",
+      "miniapp",
+      "onchainkit"
+    ],
+    "webhookUrl": "https://ae45bfef39ea47688a5b146c9bb536c2-ryt6.vercel.app/api/webhook"
+  }
+}

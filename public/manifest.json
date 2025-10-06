@@ -1,0 +1,14 @@
+{
+  "name": "PatrolProof",
+  "description": "PatrolProof is a Base Mini App built with Zara.",
+  "image": "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=OG",
+  "external_url": "https://ae45bfef-39ea-4768-8a5b-146c9bb536c2.vercel.app",
+  "properties": {
+    "app": {
+      "name": "PatrolProof",
+      "description": "PatrolProof is a Base Mini App built with Zara.",
+      "url": "https://ae45bfef-39ea-4768-8a5b-146c9bb536c2.vercel.app",
+      "icon": "https://0co.to/images/zara-2.png"
+    }
+  }
+}

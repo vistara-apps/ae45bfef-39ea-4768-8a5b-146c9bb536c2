@@ -1,25 +1,24 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { Providers } from './providers';
-
-const inter = Inter({ subsets: ['latin'] });
+import type { Metadata } from 'next'
+import './globals.css'
+import { ThemeProvider } from './components/ThemeProvider'
 
 export const metadata: Metadata = {
-  title: 'PatrolProof - Verifiable Guard Tours',
-  description: 'GPS-verified checkpoints, instant incident reporting, and on-chain reputation for security guards',
-};
+  title: 'Base Mini App',
+  description: 'Built with Zara',
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
+      <body>
+        <ThemeProvider defaultTheme="default">
+          {children}
+        </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

@@ -26,18 +26,30 @@ A Base MiniApp that enables security guards to prove patrol completion with GPS-
    npm install
    ```
 
-2. **Set up environment variables**:
+2. **Set up the database**:
+   ```bash
+   # Generate Prisma client
+   npm run db:generate
+
+   # Push database schema
+   npm run db:push
+
+   # Seed with sample data
+   npm run db:seed
+   ```
+
+3. **Set up environment variables**:
    ```bash
    cp .env.local.example .env.local
    ```
-   Then fill in your API keys.
+   Then fill in your API keys and database URL.
 
-3. **Run the development server**:
+4. **Run the development server**:
    ```bash
    npm run dev
    ```
 
-4. **Open [http://localhost:3000](http://localhost:3000)** in your browser.
+5. **Open [http://localhost:3000](http://localhost:3000)** in your browser.
 
 ## Project Structure
 

@@ -1,60 +1,95 @@
 'use client';
 
 import { Award, Clock, MapPin, TrendingUp, Camera, CheckCircle2 } from 'lucide-react';
+import { PatrolWithRelations } from '@/lib/types';
 
-const metrics = [
-  {
-    icon: Award,
-    label: 'Total GRT',
-    value: '156',
-    change: '+12 this week',
-    color: 'text-warning',
-  },
-  {
-    icon: CheckCircle2,
-    label: 'Checkpoints',
-    value: '234',
-    change: '+8 today',
-    color: 'text-success',
-  },
-  {
-    icon: Clock,
-    label: 'Avg. Patrol Time',
-    value: '42 min',
-    change: '-5 min vs last week',
-    color: 'text-primary',
-  },
-  {
-    icon: TrendingUp,
-    label: 'Patrol Score',
-    value: '94/100',
-    change: '+2 points',
-    color: 'text-accent',
-  },
-  {
-    icon: Camera,
-    label: 'Incidents Logged',
-    value: '12',
-    change: '3 this week',
-    color: 'text-danger',
-  },
-  {
-    icon: MapPin,
-    label: 'Properties',
-    value: '5',
-    change: 'Active routes',
-    color: 'text-primary',
-  },
-];
+interface MetricsOverviewProps {
+  patrol: PatrolWithRelations | null;
+}
 
-export function MetricsOverview() {
+export function MetricsOverview({ patrol }: MetricsOverviewProps) {
+  if (!patrol) {
+    return (
+      <div className="glass-card p-8 text-center">
+        <Award className="w-12 h-12 text-text-muted mx-auto mb-4" />
+        <p className="text-text-muted">No patrol data available</p>
+        <p className="text-sm text-text-muted mt-2">Complete patrols to see your performance metrics</p>
+      </div>
+    );
+  }
+
+  const checkpointsCompleted = patrol.checkpointScans.filter(scan => scan.verified).length;
+  const totalGRT = patrol.checkpointScans.reduce((sum, scan) => sum + scan.grtAwarded, 0);
+  const patrolScore = patrol.checkpointsRequired > 0
+    ? Math.round((checkpointsCompleted / patrol.checkpointsRequired) * 100)
+    : 0;
+
+  // Calculate patrol duration
+  const patrolDuration = patrol.endTime
+    ? Math.round((patrol.endTime.getTime() - patrol.startTime.getTime()) / (1000 * 60)) // minutes
+    : Math.round((Date.now() - patrol.startTime.getTime()) / (1000 * 60));
+
+  // Determine reputation badge
+  const getReputationBadge = (totalGRT: number) => {
+    if (totalGRT >= 200) return { type: 'elite', label: 'Elite Guard' };
+    if (totalGRT >= 50) return { type: 'pro', label: 'Pro Guard' };
+    return { type: 'rookie', label: 'Rookie Guard' };
+  };
+
+  const reputationBadge = getReputationBadge(patrol.guard.totalGRT);
+
+  const metrics = [
+    {
+      icon: Award,
+      label: 'Total GRT',
+      value: patrol.guard.totalGRT.toString(),
+      change: `+${totalGRT} this patrol`,
+      color: 'text-warning',
+    },
+    {
+      icon: CheckCircle2,
+      label: 'Checkpoints',
+      value: patrol.guard.totalCheckpoints.toString(),
+      change: `+${checkpointsCompleted} this patrol`,
+      color: 'text-success',
+    },
+    {
+      icon: Clock,
+      label: 'Patrol Time',
+      value: `${patrolDuration} min`,
+      change: patrol.endTime ? 'Completed' : 'In progress',
+      color: 'text-primary',
+    },
+    {
+      icon: TrendingUp,
+      label: 'Patrol Score',
+      value: `${patrolScore}/100`,
+      change: patrolScore >= 80 ? 'Excellent' : patrolScore >= 60 ? 'Good' : 'Needs improvement',
+      color: 'text-accent',
+    },
+    {
+      icon: Camera,
+      label: 'Incidents Logged',
+      value: patrol.incidentReports.length.toString(),
+      change: 'This patrol',
+      color: 'text-danger',
+    },
+    {
+      icon: MapPin,
+      label: 'Properties',
+      value: '1', // Current property
+      change: patrol.property.name,
+      color: 'text-primary',
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Your Performance</h2>
-        <div className="reputation-badge badge-pro">
+        <div className={`reputation-badge badge-${reputationBadge.type}`}>
           <Award className="w-4 h-4" />
-          Pro Guard
+          {reputationBadge.label}
         </div>
       </div>
 
@@ -79,10 +114,19 @@ export function MetricsOverview() {
         <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
         <div className="space-y-4">
           {[
-            { action: 'Checkpoint verified', location: 'North Gate', time: '5 min ago', type: 'success' },
-            { action: 'Incident reported', location: 'East Entrance', time: '1 hour ago', type: 'warning' },
-            { action: 'Shift completed', location: 'Oakwood Plaza', time: '2 hours ago', type: 'info' },
-          ].map((activity, index) => (
+            ...patrol.checkpointScans.slice(-3).map(scan => ({
+              action: 'Checkpoint verified',
+              location: patrol.property.checkpoints.find(c => c.id === scan.checkpointID)?.locationName || 'Unknown',
+              time: new Date(scan.scannedAt).toLocaleString(),
+              type: 'success' as const,
+            })),
+            ...patrol.incidentReports.slice(-2).map(incident => ({
+              action: 'Incident reported',
+              location: patrol.property.checkpoints.find(c => c.id === incident.checkpointID)?.locationName || 'Unknown',
+              time: new Date(incident.reportedAt).toLocaleString(),
+              type: 'warning' as const,
+            })),
+          ].slice(-5).map((activity, index) => (
             <div key={index} className="flex items-center gap-4 pb-4 border-b border-border last:border-0 last:pb-0">
               <div className={`w-2 h-2 rounded-full ${
                 activity.type === 'success' ? 'bg-success' :

@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@coinbase/onchainkit": "^0.38.19",
@@ -23,7 +27,21 @@
     "@react-native-async-storage/async-storage": "^1.24.0",
     "tailwindcss": "^3.4.1",
     "pino-pretty": "^10.3.1",
-    "postcss": "^8"
+    "postcss": "^8",
+    "mapbox-gl": "^3.7.0",
+    "openai": "^4.77.3",
+    "pinata": "^1.4.0",
+    "resend": "^4.0.1",
+    "jspdf": "^2.5.2",
+    "uuid": "^11.0.4",
+    "zod": "^3.23.8",
+    "prisma": "^5.22.0",
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -31,6 +49,7 @@
     "@types/react-dom": "^19",
     "eslint": "^8",
     "eslint-config-next": "15.3.3",
+    "tsx": "^4.7.0",
     "typescript": "^5"
   }
 }

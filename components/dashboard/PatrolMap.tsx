@@ -1,15 +1,31 @@
 'use client';
 
 import { MapPin, Navigation } from 'lucide-react';
+import { PatrolWithRelations } from '@/lib/types';
 
-const mockCheckpoints = [
-  { id: 1, name: 'North Gate', status: 'verified', lat: 37.7749, lng: -122.4194 },
-  { id: 2, name: 'East Entrance', status: 'verified', lat: 37.7759, lng: -122.4184 },
-  { id: 3, name: 'South Parking', status: 'pending', lat: 37.7739, lng: -122.4204 },
-  { id: 4, name: 'West Building', status: 'pending', lat: 37.7749, lng: -122.4214 },
-];
+interface PatrolMapProps {
+  patrol: PatrolWithRelations | null;
+  onCheckpointSelect: (checkpointId: string) => void;
+}
 
-export function PatrolMap() {
+export function PatrolMap({ patrol, onCheckpointSelect }: PatrolMapProps) {
+  if (!patrol) {
+    return (
+      <div className="glass-card p-8 text-center">
+        <MapPin className="w-12 h-12 text-text-muted mx-auto mb-4" />
+        <p className="text-text-muted">No active patrol found</p>
+        <p className="text-sm text-text-muted mt-2">Start a new patrol to see the map</p>
+      </div>
+    );
+  }
+
+  const scannedCheckpointIds = new Set(
+    patrol.checkpointScans.filter(scan => scan.verified).map(scan => scan.checkpointID)
+  );
+
+  const checkpointsCompleted = scannedCheckpointIds.size;
+  const progress = patrol.checkpointsRequired > 0 ? (checkpointsCompleted / patrol.checkpointsRequired) * 100 : 0;
+
   return (
     <div className="space-y-4">
       {/* Map Container */}
@@ -24,19 +40,28 @@ export function PatrolMap() {
             }} />
           </div>
 
-          {/* Mock checkpoint markers */}
-          <div className="absolute top-1/4 left-1/4 checkpoint-marker checkpoint-verified">
-            <MapPin className="w-6 h-6" />
-          </div>
-          <div className="absolute top-1/3 right-1/3 checkpoint-marker checkpoint-verified">
-            <MapPin className="w-6 h-6" />
-          </div>
-          <div className="absolute bottom-1/3 left-1/3 checkpoint-marker checkpoint-pending">
-            <MapPin className="w-6 h-6" />
-          </div>
-          <div className="absolute bottom-1/4 right-1/4 checkpoint-marker checkpoint-pending">
-            <MapPin className="w-6 h-6" />
-          </div>
+          {/* Checkpoint markers */}
+          {patrol.property.checkpoints.map((checkpoint, index) => {
+            const isScanned = scannedCheckpointIds.has(checkpoint.id);
+            const position = getCheckpointPosition(index, patrol.property.checkpoints.length);
+
+            return (
+              <button
+                key={checkpoint.id}
+                onClick={() => onCheckpointSelect(checkpoint.id)}
+                className={`absolute checkpoint-marker ${
+                  isScanned ? 'checkpoint-verified' : 'checkpoint-pending'
+                }`}
+                style={{
+                  top: position.top,
+                  left: position.left,
+                }}
+                title={checkpoint.locationName}
+              >
+                <MapPin className="w-6 h-6" />
+              </button>
+            );
+          })}
 
           {/* Current location indicator */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -58,19 +83,40 @@ export function PatrolMap() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-text-muted">Current Route</p>
-            <p className="text-lg font-semibold">Oakwood Plaza - Night Shift</p>
+            <p className="text-lg font-semibold">{patrol.property.name}</p>
           </div>
           <div className="text-right">
             <p className="text-sm text-text-muted">Progress</p>
-            <p className="text-lg font-semibold text-primary">2/4 Checkpoints</p>
+            <p className="text-lg font-semibold text-primary">
+              {checkpointsCompleted}/{patrol.checkpointsRequired} Checkpoints
+            </p>
           </div>
         </div>
-        
+
         {/* Progress bar */}
         <div className="mt-4 h-2 bg-surface rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-primary to-accent w-1/2 transition-all duration-300" />
+          <div
+            className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
     </div>
   );
+}
+
+// Helper function to position checkpoints on the map
+function getCheckpointPosition(index: number, total: number): { top: string; left: string } {
+  const positions = [
+    { top: '25%', left: '25%' },
+    { top: '30%', left: '70%' },
+    { top: '65%', left: '30%' },
+    { top: '70%', left: '75%' },
+    { top: '20%', left: '50%' },
+    { top: '80%', left: '20%' },
+    { top: '40%', left: '80%' },
+    { top: '75%', left: '60%' },
+  ];
+
+  return positions[index % positions.length];
 }

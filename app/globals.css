@@ -18,17 +18,17 @@
   --color-accent-hover: hsl(199, 89%, 40%);
   --color-primary-hover: hsl(199, 89%, 40%);
   --color-surface-hover: hsl(220, 35%, 16%);
-
+  
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-full: 9999px;
-
+  
   --shadow-card: 0 4px 16px hsla(220, 40%, 4%, 0.6);
   --shadow-button: 0 2px 8px hsla(199, 89%, 48%, 0.3);
   --shadow-dialog: 0 16px 48px hsla(220, 40%, 4%, 0.8);
   --shadow-card-hover: 0 8px 24px hsla(220, 40%, 4%, 0.7);
-
+  
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 12px;
@@ -54,96 +54,49 @@
     @apply bg-surface border border-border rounded-lg shadow-card;
     backdrop-filter: blur(10px);
   }
-
+  
   .btn-primary {
     @apply bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-hover transition-all duration-200 shadow-button;
   }
-
+  
   .btn-secondary {
     @apply bg-surface text-fg px-6 py-3 rounded-lg font-medium hover:bg-surface-hover transition-all duration-200 border border-border;
   }
-
+  
   .btn-danger {
     @apply bg-danger text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-all duration-200 shadow-button;
   }
-
+  
   .checkpoint-marker {
-    @apply w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-lg;
+    @apply w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg;
   }
-
-  .checkpoint-verified {
-    @apply bg-success;
-  }
-
+  
   .checkpoint-pending {
-    @apply bg-border;
+    @apply bg-surface border-2 border-border text-text-muted;
   }
-
+  
+  .checkpoint-verified {
+    @apply bg-success border-2 border-success text-white;
+  }
+  
   .checkpoint-skipped {
-    @apply bg-danger;
+    @apply bg-danger border-2 border-danger text-white;
   }
-
-  .pulse-animation {
+  
+  .fab {
+    @apply fixed bottom-20 right-6 w-16 h-16 rounded-full shadow-dialog flex items-center justify-center z-50 transition-all duration-200;
+  }
+  
+  .fab-primary {
+    @apply bg-primary text-white hover:scale-110;
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-
+  
+  .fab-danger {
+    @apply bg-danger text-white hover:scale-110;
+  }
+  
   @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
-  }
-
-  .scan-button {
-    @apply fixed bottom-24 right-6 w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-lg z-50;
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 20px hsla(199, 89%, 48%, 0.5);
-    }
-    50% {
-      box-shadow: 0 0 40px hsla(199, 89%, 48%, 0.8);
-    }
-  }
-
-  .incident-card {
-    @apply glass-card p-4 hover:bg-surface-hover transition-all duration-200;
-  }
-
-  .incident-low {
-    border-left: 4px solid hsl(199, 89%, 48%);
-  }
-
-  .incident-medium {
-    border-left: 4px solid hsl(38, 92%, 50%);
-  }
-
-  .incident-high {
-    border-left: 4px solid hsl(0, 84%, 60%);
-  }
-
-  .reputation-badge {
-    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium;
-  }
-
-  .reputation-rookie {
-    @apply bg-border text-text-muted;
-  }
-
-  .reputation-pro {
-    @apply bg-primary/20 text-primary;
-  }
-
-  .reputation-elite {
-    @apply bg-gradient-to-r from-primary to-accent text-white;
-    animation: shimmer 2s ease-in-out infinite;
-  }
-
-  @keyframes shimmer {
     0%, 100% {
       opacity: 1;
     }
@@ -151,22 +104,56 @@
       opacity: 0.8;
     }
   }
-
-  .heatmap-marker-fast {
-    @apply bg-success;
+  
+  .metric-card {
+    @apply glass-card p-4 hover:bg-surface-hover transition-all duration-200;
   }
-
-  .heatmap-marker-medium {
-    @apply bg-warning;
+  
+  .incident-card {
+    @apply glass-card p-4 border-l-4;
   }
-
-  .heatmap-marker-slow {
-    @apply bg-danger;
+  
+  .incident-low {
+    border-left-color: hsl(199, 89%, 48%);
+  }
+  
+  .incident-medium {
+    border-left-color: hsl(38, 92%, 50%);
+  }
+  
+  .incident-high {
+    border-left-color: hsl(0, 84%, 60%);
+  }
+  
+  .reputation-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .badge-rookie {
+    @apply bg-surface text-text-muted border border-border;
+  }
+  
+  .badge-pro {
+    @apply bg-primary/20 text-primary border border-primary;
+  }
+  
+  .badge-elite {
+    @apply bg-gradient-to-r from-yellow-500 to-orange-500 text-white;
+    animation: shimmer 2s linear infinite;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
   }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
   }
 }

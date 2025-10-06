@@ -4,20 +4,20 @@ A Base MiniApp that enables security guards to prove patrol completion with GPS-
 
 ## Features
 
-- **GPS-Verified Checkpoint Scanning**: Scan QR/NFC tags with location verification (±20m tolerance)
-- **Instant Incident Photo Reports**: AI-generated summaries from photos in 30 seconds
+- **GPS-Verified Checkpoints**: Scan QR/NFC tags with automatic GPS verification (±20m tolerance)
+- **Instant Incident Reports**: Capture geo-tagged photos with AI-generated summaries
 - **Route Heatmap Dashboard**: Visual analytics showing time spent per checkpoint
-- **Automated Client Reports**: Zero-touch PDF summaries emailed after every shift
-- **Guard Reputation Tokens (GRT)**: Earn on-chain tokens for verified patrols
-- **Farcaster Social Frames**: Share shift summaries and build public reputation
+- **Automated Client Reports**: Zero-touch branded PDF summaries emailed after every shift
+- **Guard Reputation Tokens (GRT)**: Earn on-chain tokens for verified checkpoints
+- **Farcaster Social Frames**: Share shift summaries as interactive frames
 
 ## Tech Stack
 
 - **Framework**: Next.js 15 with App Router
 - **Blockchain**: Base L2 (via OnchainKit)
 - **Styling**: Tailwind CSS with custom design system
-- **Authentication**: Base Wallet via OnchainKit
-- **Social**: Farcaster Frames integration
+- **Authentication**: OnchainKit Wallet Integration
+- **Social**: Farcaster Frames API
 
 ## Getting Started
 
@@ -30,20 +30,14 @@ A Base MiniApp that enables security guards to prove patrol completion with GPS-
    ```bash
    cp .env.local.example .env.local
    ```
-   
-   Fill in your API keys:
-   - OnchainKit API key from [Coinbase Developer Platform](https://portal.cdp.coinbase.com/)
-   - Pinata API keys from [Pinata](https://pinata.cloud/)
-   - OpenAI API key from [OpenAI](https://platform.openai.com/)
-   - Resend API key from [Resend](https://resend.com/)
-   - Mapbox token from [Mapbox](https://mapbox.com/)
+   Then fill in your API keys.
 
 3. **Run the development server**:
    ```bash
    npm run dev
    ```
 
-4. **Open [http://localhost:3000](http://localhost:3000)** in your browser
+4. **Open [http://localhost:3000](http://localhost:3000)** in your browser.
 
 ## Project Structure
 
@@ -53,49 +47,60 @@ app/
 ├── page.tsx            # Landing page
 ├── providers.tsx       # OnchainKit provider setup
 ├── dashboard/          # Main dashboard
-└── demo/               # Demo page
+│   └── page.tsx
+├── demo/               # Demo page
+│   └── page.tsx
+└── contact/            # Contact page
+    └── page.tsx
 
 components/
-├── LandingPage.tsx     # Landing page component
-├── DashboardView.tsx   # Main dashboard with tabs
-├── PatrolMap.tsx       # Interactive patrol map
-├── CheckpointList.tsx  # Checkpoint scanning interface
-├── IncidentReports.tsx # Incident reporting interface
-├── ReputationDashboard.tsx # GRT tokens and leaderboard
-└── DemoView.tsx        # Demo showcase
+├── Hero.tsx            # Landing page hero
+├── Features.tsx        # Features section
+├── HowItWorks.tsx      # How it works section
+├── CTASection.tsx      # Call to action
+└── dashboard/          # Dashboard components
+    ├── DashboardHeader.tsx
+    ├── PatrolMap.tsx
+    ├── CheckpointList.tsx
+    ├── MetricsOverview.tsx
+    ├── ScanButton.tsx
+    └── BottomNav.tsx
 ```
 
 ## Design System
 
 The app uses a security/tactical theme with:
-- **Colors**: Dark navy background, electric blue accents (#0ea5e9)
-- **Typography**: Inter font family
-- **Components**: Glass-morphism cards, sharp borders
-- **Animations**: Pulse effects, smooth transitions
+- **Background**: Dark navy (hsl(220, 40%, 8%))
+- **Accent**: Electric blue (hsl(199, 89%, 48%))
+- **Success**: Green (hsl(142, 76%, 36%))
+- **Danger**: Red (hsl(0, 84%, 60%))
+- **Warning**: Orange (hsl(38, 92%, 50%))
 
-## Key User Flows
+All design tokens are defined as CSS variables in `app/globals.css`.
 
-1. **Guard Onboarding**: Connect wallet → Enter profile → Start first patrol
-2. **Checkpoint Scan**: Tap scan button → Verify GPS → Earn GRT token
-3. **Incident Report**: Snap photo → AI generates summary → Submit to blockchain
-4. **Shift Completion**: View summary → Share Frame on Farcaster → Build reputation
+## Key Components
 
-## Business Model
+### Checkpoint Scanning
+Guards scan QR/NFC tags at patrol locations. The app verifies GPS coordinates and records a cryptographic timestamp on Base L2.
 
-- **Micro-transactions**: $0.10 per verified checkpoint scan
-- **Freemium**: Free for 1 guard, $29/mo for teams of 5+
-- **Tokenized Reputation**: Guards earn GRT tokens that unlock bonuses
+### Incident Reporting
+Tap the floating action button to capture geo-tagged, timestamped photos. AI auto-generates incident summaries.
 
-## Deployment
+### Reputation System
+Guards earn GRT tokens for completing patrols. Tokens build an on-chain reputation that can be showcased to clients.
 
-Deploy to Vercel with one click:
+## API Integration
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/patrolproof)
+- **Base MiniKit SDK**: Wallet-native UX for transactions
+- **Farcaster Frames API**: Generate interactive shift summaries
+- **Pinata IPFS API**: Decentralized photo storage
+- **OpenAI GPT-4 Vision**: AI incident summaries
+- **Resend Email API**: Automated client reports
 
 ## License
 
-MIT License - see LICENSE file for details
+MIT
 
 ## Support
 
-For questions or support, reach out on [Farcaster](https://warpcast.com/~/channel/securitypros)
+For questions or support, contact hello@patrolproof.com
